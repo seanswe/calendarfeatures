@@ -1,5 +1,5 @@
 from dateutil.rrule import rrule, YEARLY
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Holiday:
@@ -13,7 +13,16 @@ class Holiday:
     def __repr__(self):
         return f"Holiday({vars(self)})"
 
-    def get_dates(self, start, stop):
+    @staticmethod
+    def _get_observed_date(holiday_date):
+        if holiday_date.weekday() == 5:
+            return holiday_date - timedelta(days=1)
+        elif holiday_date.weekday() == 6:
+            return holiday_date + timedelta(days=1)
+        else:
+            return holiday_date
+
+    def get_dates(self, start, stop, observed=False):
         if self.day:
             dates = rrule(
                 YEARLY,
@@ -32,7 +41,12 @@ class Holiday:
                 until=stop,
             )
 
-        return [d.date() for d in dates]
+        if observed:
+            return {self._get_observed_date(d) for d in dates}
+        else:
+            return list(dates)
+
+    # US Holidays
 
     @classmethod
     def NewYearsDay(cls):
@@ -59,10 +73,6 @@ class Holiday:
         return cls("Labor Day", month=9, nth=1, weekday=0)
 
     @classmethod
-    def ColumbusDay(cls):
-        return cls("Columbus Day", month=10, nth=2, weekday=0)
-
-    @classmethod
     def VeteransDay(cls):
         return cls("Veterans's Day", month=11, day=11)
 
@@ -74,6 +84,24 @@ class Holiday:
     def Christmas(cls):
         return cls("Christmas", month=12, day=25)
 
+    # Other Holidays
+
+    @classmethod
+    def ColumbusDay(cls):
+        return cls("Columbus Day", month=10, nth=2, weekday=0)
+
+    # Pseudo Holidays
+
+    @classmethod
+    def BlackFriday(cls):
+        return cls("Black Friday", month=11, nth=4, weekday=4)
+
+    @classmethod
+    def ChristmasEve(cls):
+        return cls("Christmas Eve", month=12, day=24)
+
+
+# Predefined holiday lists
 
 USHolidays = [
     Holiday.NewYearsDay(),
@@ -87,15 +115,11 @@ USHolidays = [
     Holiday.Christmas(),
 ]
 
-
-if __name__ == "__main__":
-
-    for i in USHolidays:
-        print(i)
-    # START = datetime(2021, 1, 1)
-    # STOP = datetime(2029, 1, 1)
-
-    # thg = Holiday(month=11, nth=4, weekday=3)
-    # print(thg)
-
-    # print(Holiday.memorialday().get_dates(START, STOP))
+NERCHolidays = [
+    Holiday.NewYearsDay(),
+    Holiday.MemorialDay(),
+    Holiday.IndependenceDay(),
+    Holiday.LaborDay(),
+    Holiday.Thanksgiving(),
+    Holiday.Christmas(),
+]

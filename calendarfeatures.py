@@ -106,10 +106,16 @@ class Holiday:
 
 class Holidays:
     def __init__(self, holidays=None):
-        self.holidays = holidays
+        if all([isinstance(h, Holiday) for h in holidays]):
+            self.holidays = holidays
+        else:
+            raise TypeError("Holidays only accepts Holiday objects.")
 
     def __repr__(self):
-        return f"Holidays({vars(self)})"
+        return f"Holidays(holidays={self.holidays})"
+
+    def __getitem__(self, position):
+        return self.holidays[position]
 
     # Predefined holiday lists
 

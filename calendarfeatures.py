@@ -1,5 +1,6 @@
 from dateutil.rrule import rrule, YEARLY
 from datetime import datetime, timedelta
+from collections import UserList
 
 
 class Holiday:
@@ -11,7 +12,9 @@ class Holiday:
         self.weekday = weekday
 
     def __repr__(self):
-        return f"Holiday({vars(self)})"
+        first = f'name="{self.name}", '
+        args = ", ".join([f"{k}={v}" for (k, v) in vars(self).items() if k != "name"])
+        return "Holiday(" + first + args + ")"
 
     @staticmethod
     def _get_observed_date(holiday_date):
@@ -101,7 +104,15 @@ class Holiday:
         return cls("Christmas Eve", month=12, day=24)
 
 
-# Predefined holiday lists
+class Holidays:
+    def __init__(self, holidays=None):
+        self.holidays = holidays
+
+    def __repr__(self):
+        return f"Holidays({vars(self)})"
+
+    # Predefined holiday lists
+
 
 USHolidays = [
     Holiday.NewYearsDay(),

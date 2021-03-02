@@ -1,6 +1,6 @@
 from dateutil.rrule import rrule, YEARLY
 from datetime import datetime, timedelta
-from collections import UserList
+from collections.abc import MutableMapping
 
 
 class Holiday:
@@ -104,7 +104,7 @@ class Holiday:
         return cls("Christmas Eve", month=12, day=24)
 
 
-class Holidays:
+class Holidays(MutableMapping):
     def __init__(self, holidays=None):
         if all([isinstance(h, Holiday) for h in holidays]):
             self.holidays = {h.name: h for h in holidays}
@@ -116,6 +116,18 @@ class Holidays:
 
     def __getitem__(self, name):
         return self.holidays[name]
+
+    def __setitem__(self, name, holiday):
+        self.holidays[name] = holiday
+
+    def __delitem__(self, name):
+        self.holidays.pop(name, None)
+
+    def __iter__(self):
+        return iter(self.holidays.items())
+
+    def __len__(self):
+        return len(self.holidays)
 
     # Predefined holiday lists
 

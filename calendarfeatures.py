@@ -107,15 +107,15 @@ class Holiday:
 class Holidays:
     def __init__(self, holidays=None):
         if all([isinstance(h, Holiday) for h in holidays]):
-            self.holidays = holidays
+            self.holidays = {h.name: h for h in holidays}
         else:
             raise TypeError("Holidays only accepts Holiday objects.")
 
     def __repr__(self):
         return f"Holidays(holidays={self.holidays})"
 
-    def __getitem__(self, position):
-        return self.holidays[position]
+    def __getitem__(self, name):
+        return self.holidays[name]
 
     # Predefined holiday lists
 

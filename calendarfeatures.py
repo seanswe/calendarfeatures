@@ -1,6 +1,7 @@
 from dateutil.rrule import rrule, YEARLY
 from datetime import datetime, timedelta
 from collections.abc import MutableMapping
+from itertools import chain
 
 
 class Holiday:
@@ -105,29 +106,42 @@ class Holiday:
 
 
 class Holidays(MutableMapping):
-    def __init__(self, holidays=None):
+    def __init__(self, holidays):
         if all([isinstance(h, Holiday) for h in holidays]):
-            self.holidays = {h.name: h for h in holidays}
+            self.holidays = holidays
+            self.store = {h.name: h for h in self.holidays}
         else:
             raise TypeError("Holidays only accepts Holiday objects.")
 
     def __repr__(self):
-        return f"Holidays(holidays={self.holidays})"
+        return f"Holidays({self.holidays})"
 
-    def __getitem__(self, name):
-        return self.holidays[name]
+    def __getitem__(self, key):
+        return self.store[key]
 
-    def __setitem__(self, name, holiday):
-        self.holidays[name] = holiday
+    def __setitem__(self, key, value):
+        self.store[key] = value
 
-    def __delitem__(self, name):
-        self.holidays.pop(name, None)
+    def __delitem__(self, key):
+        self.store.pop(key, None)
+
+    def keys(self):
+        return self.store.keys()
+
+    def items(self):
+        return self.store.items()
+
+    def values(self):
+        return self.store.values()
 
     def __iter__(self):
-        return iter(self.holidays.items())
+        return iter(self.store)
 
     def __len__(self):
-        return len(self.holidays)
+        return len(self.store)
+
+    def get_dates(self, start, stop, observed=False):
+        return list(chain([h.get_dates(start, stop, observed) for h in self.values()]))
 
     # Predefined holiday lists
 

@@ -27,7 +27,7 @@ class Holiday:
             return holiday_date
 
     def get_dates(self, start, stop, observed=False):
-        if self.day:
+        if all([self.day, self.month]):
             dates = rrule(
                 YEARLY,
                 bymonth=self.month,
@@ -141,7 +141,7 @@ class Holidays(MutableMapping):
         return len(self.store)
 
     def get_dates(self, start, stop, observed=False):
-        return list(chain([h.get_dates(start, stop, observed) for h in self.values()]))
+        return (d.get_dates(start, stop, observed) for d in h for h in self.values())
 
     # Predefined holiday lists
 

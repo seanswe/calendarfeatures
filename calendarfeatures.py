@@ -141,7 +141,7 @@ class Holidays(MutableMapping):
         return len(self.store)
 
     def get_dates(self, start, stop, observed=False):
-        return (d.get_dates(start, stop, observed) for d in h for h in self.values())
+        return [d for h in self.holidays for d in h.get_dates(start, stop)]
 
     # Predefined holiday lists
 
